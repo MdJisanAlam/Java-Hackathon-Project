@@ -1,4 +1,8 @@
 # Techgig-Hackathon-Project
+git rm filename.java
+git commit -m "index.html"
+git push origin main
+
 📌 Project Overview
 
 The Car Rental Management System is a Java-based application that allows users to rent and return cars while providing an admin panel for managing cars, bookings, and customers.
