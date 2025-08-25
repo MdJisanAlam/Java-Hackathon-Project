@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Orientation App</title>
+    <!-- Prompt: "Use Tailwind CSS for a modern, mobile-first design. Include the cdn link." -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            overflow: hidden; /* Prevent horizontal scrolling */
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+            text-align: center;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .mode-container {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 90%;
+            height: 90%;
+            max-width: 600px;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .show {
+            display: flex;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .digital-clock {
+            font-family: monospace;
+        }
+        .glass-button {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        /* Custom styles for the message box */
+        #message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            background-color: #1c2b4d;
+            border: 1px solid #3b82f6;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-slate-50">
+    <div id="app-container" class="container">
+        <!-- AI-Generated HTML Components -->
+
+        <!-- Prompt: "Generate a mobile-first Alarm Clock UI using Tailwind CSS. Include a digital clock, an input for setting time, and a 'Set Alarm' button." -->
+        <div id="alarm-mode" class="mode-container hidden">
+            <h2 class="text-4xl font-bold mb-8">Alarm Clock</h2>
+            <div id="alarm-clock" class="text-6xl md:text-8xl font-bold mb-4 digital-clock"></div>
+            <p class="text-sm mb-4">Set your wake-up call Saba Parween❤️!</p>
+            <input type="time" id="alarm-time-input" class="p-3 my-4 rounded-xl text-lg text-slate-800 bg-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+            <button id="set-alarm-btn" class="glass-button w-full md:w-auto px-8 py-3 rounded-full text-lg font-semibold mt-4">Set Alarm</button>
+            <div id="alarm-message" class="mt-4 text-green-400"></div>
+        </div>
+
+        <!-- Prompt: "Generate a mobile-first Stopwatch UI using Tailwind CSS. It needs a display for minutes, seconds, and milliseconds, and buttons for start, stop, and reset." -->
+        <div id="stopwatch-mode" class="mode-container hidden">
+            <h2 class="text-4xl font-bold mb-8">Stopwatch</h2>
+            <div id="stopwatch-display" class="text-6xl md:text-8xl font-bold mb-4 digital-clock">00:00:00</div>
+            <div class="flex space-x-4 mt-8">
+                <button id="start-stopwatch-btn" class="glass-button px-8 py-3 rounded-full text-lg font-semibold">Start</button>
+                <button id="stop-stopwatch-btn" class="glass-button px-8 py-3 rounded-full text-lg font-semibold">Stop</button>
+                <button id="reset-stopwatch-btn" class="glass-button px-8 py-3 rounded-full text-lg font-semibold">Reset</button>
+            </div>
+        </div>
+
+        <!-- Prompt: "Generate a mobile-first Timer UI using Tailwind CSS. It should have a display for the countdown, an input field for setting the time in seconds, and start/reset buttons." -->
+        <div id="timer-mode" class="mode-container hidden">
+            <h2 class="text-4xl font-bold mb-8">Timer</h2>
+            <div id="timer-display" class="text-6xl md:text-8xl font-bold mb-4 digital-clock">00:00</div>
+            <p class="text-sm mb-4">Set a countdown in seconds.</p>
+            <input type="number" id="timer-seconds-input" placeholder="e.g. 60" class="p-3 my-4 rounded-xl text-lg text-slate-800 bg-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+            <div class="flex space-x-4 mt-8">
+                <button id="start-timer-btn" class="glass-button px-8 py-3 rounded-full text-lg font-semibold">Start</button>
+                <button id="reset-timer-btn" class="glass-button px-8 py-3 rounded-full text-lg font-semibold">Reset</button>
+            </div>
+        </div>
+
+        <!-- Prompt: "Generate a mobile-first Weather UI using Tailwind CSS. It should display the location, temperature, and a weather description. Add a loading state. I will use a free API like Open-Meteo." -->
+        <div id="weather-mode" class="mode-container hidden">
+            <h2 class="text-4xl font-bold mb-8">Weather of the Day</h2>
+            <div id="weather-content" class="text-center w-full">
+                <div id="weather-loading" class="text-xl">Getting your location and weather...</div>
+                <div id="weather-details" class="hidden">
+                    <p id="weather-location" class="text-2xl font-semibold mb-2"></p>
+                    <p id="weather-temp" class="text-6xl font-bold text-blue-300"></p>
+                    <p id="weather-description" class="text-xl mt-2"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom message box for alerts -->
+        <div id="message-box" class="flex flex-col items-center">
+            <p id="message-text" class="text-lg"></p>
+            <button id="message-ok-btn" class="glass-button mt-4 px-4 py-2 rounded-full text-sm">OK</button>
+        </div>
+    </div>
+
+    <!-- AI-Generated JavaScript Logic -->
+    <script>
+        // AI-Powered JavaScript Code
+        
+        // --- Core UI State and Orientation Logic ---
+
+        // Prompt: "Implement the main logic to detect device orientation using the 'deviceorientation' event listener. 
+        // Based on the device's gamma and beta values, toggle the visibility of the different UI modes. 
+        // Use `alpha`, `beta`, `gamma` values to determine the orientation: 
+        // Portrait (Upright): beta > 45 && beta < 135
+        // Portrait (Upside Down): beta < -45 && beta > -135
+        // Landscape (Right): gamma < -45 && gamma > -135
+        // Landscape (Left): gamma > 45 && gamma < 135
+        // Ensure only one mode is visible at a time."
+
+        const alarmMode = document.getElementById('alarm-mode');
+        const stopwatchMode = document.getElementById('stopwatch-mode');
+        const timerMode = document.getElementById('timer-mode');
+        const weatherMode = document.getElementById('weather-mode');
+
+        // Function to show a specific mode and hide others
+        const showMode = (mode) => {
+            const modes = [alarmMode, stopwatchMode, timerMode, weatherMode];
+            modes.forEach(m => {
+                m.classList.remove('show');
+                m.classList.add('hidden');
+            });
+            mode.classList.remove('hidden');
+            mode.classList.add('show');
+        };
+        
+        // Flag to prevent rapid UI transitions
+        let orientationLocked = false;
+        let lastOrientation = null;
+        
+        const handleOrientationChange = (event) => {
+            if (orientationLocked) return;
+
+            const { beta, gamma } = event;
+            let newOrientation = null;
+
+            // Normalize beta and gamma values for smoother detection
+            const normalizedBeta = Math.round(beta);
+            const normalizedGamma = Math.round(gamma);
+
+            // Portrait (Upright) - Alarm Clock
+            // Beta is around 90 degrees when the phone is standing up,
+            // but can be anywhere from ~45 to 135 depending on how it's held.
+            if (normalizedBeta > 45 && normalizedBeta < 135) {
+                newOrientation = 'alarm';
+            }
+            // Portrait (Upside Down) - Timer
+            // Beta is around -90 degrees when the phone is upside down.
+            // Range is a bit broader to account for user holding angles.
+            else if (normalizedBeta < -45 && normalizedBeta > -135) {
+                newOrientation = 'timer';
+            }
+            // Landscape (Right) - Weather
+            // Gamma is around -90 degrees when the phone is rotated right.
+            else if (normalizedGamma < -45 && normalizedGamma > -135) {
+                newOrientation = 'weather';
+            }
+            // Landscape (Left) - Stopwatch
+            // Gamma is around 90 degrees when the phone is rotated left.
+            else if (normalizedGamma > 45 && normalizedGamma < 135) {
+                newOrientation = 'stopwatch';
+            }
+
+            if (newOrientation && newOrientation !== lastOrientation) {
+                lastOrientation = newOrientation;
+                
+                // Set a lock to prevent the UI from flickering during the transition
+                orientationLocked = true;
+                setTimeout(() => { orientationLocked = false; }, 1000); // 1-second debounce
+
+                // Reset features before showing the new one
+                resetStopwatch();
+                resetTimer();
+
+                switch (newOrientation) {
+                    case 'alarm':
+                        showMode(alarmMode);
+                        break;
+                    case 'stopwatch':
+                        showMode(stopwatchMode);
+                        break;
+                    case 'timer':
+                        showMode(timerMode);
+                        break;
+                    case 'weather':
+                        showMode(weatherMode);
+                        getWeather();
+                        break;
+                }
+            }
+        };
+
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', handleOrientationChange, true);
+        } else {
+            // Fallback for browsers that don't support DeviceOrientationEvent
+            console.log('DeviceOrientationEvent is not supported on this browser.');
+            showCustomMessage("Your browser does not support device orientation events. The app will not function as intended.");
+        }
+        
+        // --- Utility Functions for UI/UX ---
+
+        // Prompt: "Create a custom message box function to replace the 'alert()' method, since it won't work in this environment."
+        const showCustomMessage = (message) => {
+            const messageBox = document.getElementById('message-box');
+            const messageText = document.getElementById('message-text');
+            const okBtn = document.getElementById('message-ok-btn');
+
+            messageText.textContent = message;
+            messageBox.style.display = 'flex';
+            
+            okBtn.onclick = () => {
+                messageBox.style.display = 'none';
+            };
+        };
+
+        // --- Feature Implementations ---
+        
+        // Prompt: "Generate JavaScript for a complete alarm clock functionality. It should get the current time, handle setting an alarm, and play a sound or show a message when the alarm triggers."
+        
+        let alarmInterval = null;
+        let alarmTime = null;
+        const alarmClockDisplay = document.getElementById('alarm-clock');
+        const alarmTimeInput = document.getElementById('alarm-time-input');
+        const setAlarmBtn = document.getElementById('set-alarm-btn');
+        const alarmMessage = document.getElementById('alarm-message');
+
+        const updateClock = () => {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            alarmClockDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+
+            if (alarmTime && alarmTime.getHours() === now.getHours() && alarmTime.getMinutes() === now.getMinutes()) {
+                showCustomMessage("Alarm! Wake up!");
+                // Clear the alarm so it doesn't trigger again
+                alarmTime = null;
+                alarmMessage.textContent = '';
+                alarmTimeInput.value = '';
+            }
+        };
+
+        const setAlarm = () => {
+            if (!alarmTimeInput.value) {
+                showCustomMessage("Please set a time for the alarm.");
+                return;
+            }
+            const [hours, minutes] = alarmTimeInput.value.split(':');
+            alarmTime = new Date();
+            alarmTime.setHours(hours, minutes, 0, 0);
+            alarmMessage.textContent = `Alarm set for ${alarmTimeInput.value}`;
+            showCustomMessage(`Alarm set for ${alarmTimeInput.value}`);
+        };
+
+        setAlarmBtn.addEventListener('click', setAlarm);
+        setInterval(updateClock, 1000);
+        updateClock(); // Initial call to show time immediately
+
+        // Prompt: "Generate JavaScript for a complete stopwatch with start, stop, and reset functionality. Use setInterval for accurate timing."
+
+        let stopwatchInterval = null;
+        let stopwatchTime = 0;
+        let stopwatchRunning = false;
+        const stopwatchDisplay = document.getElementById('stopwatch-display');
+        const startStopwatchBtn = document.getElementById('start-stopwatch-btn');
+        const stopStopwatchBtn = document.getElementById('stop-stopwatch-btn');
+        const resetStopwatchBtn = document.getElementById('reset-stopwatch-btn');
+
+        const formatTime = (ms) => {
+            const date = new Date(ms);
+            const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+            const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+            const milliseconds = String(Math.floor(date.getUTCMilliseconds() / 10)).padStart(2, '0');
+            return `${minutes}:${seconds}:${milliseconds}`;
+        };
+
+        const startStopwatch = () => {
+            if (stopwatchRunning) return;
+            stopwatchRunning = true;
+            let startTime = Date.now() - stopwatchTime;
+            stopwatchInterval = setInterval(() => {
+                stopwatchTime = Date.now() - startTime;
+                stopwatchDisplay.textContent = formatTime(stopwatchTime);
+            }, 10); // Update every 10 milliseconds for smooth display
+        };
+
+        const stopStopwatch = () => {
+            stopwatchRunning = false;
+            clearInterval(stopwatchInterval);
+        };
+
+        const resetStopwatch = () => {
+            stopStopwatch();
+            stopwatchTime = 0;
+            stopwatchDisplay.textContent = '00:00:00';
+        };
+
+        startStopwatchBtn.addEventListener('click', startStopwatch);
+        stopStopwatchBtn.addEventListener('click', stopStopwatch);
+        resetStopwatchBtn.addEventListener('click', resetStopwatch);
+
+        // Prompt: "Generate JavaScript for a countdown timer. It should take seconds as input, count down, and alert the user when it reaches zero. Include start and reset buttons."
+
+        let timerInterval = null;
+        let timerSeconds = 0;
+        let timerRunning = false;
+        const timerDisplay = document.getElementById('timer-display');
+        const timerSecondsInput = document.getElementById('timer-seconds-input');
+        const startTimerBtn = document.getElementById('start-timer-btn');
+        const resetTimerBtn = document.getElementById('reset-timer-btn');
+
+        const updateTimerDisplay = () => {
+            const minutes = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+            const seconds = String(timerSeconds % 60).padStart(2, '0');
+            timerDisplay.textContent = `${minutes}:${seconds}`;
+        };
+
+        const startTimer = () => {
+            if (timerRunning) return;
+            const inputSeconds = parseInt(timerSecondsInput.value, 10);
+            if (isNaN(inputSeconds) || inputSeconds <= 0) {
+                showCustomMessage("Please enter a valid number of seconds.");
+                return;
+            }
+            timerSeconds = inputSeconds;
+            timerRunning = true;
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                if (timerSeconds < 0) {
+                    clearInterval(timerInterval);
+                    timerRunning = false;
+                    showCustomMessage("Timer finished!");
+                    timerDisplay.textContent = '00:00';
+                    return;
+                }
+                updateTimerDisplay();
+            }, 1000);
+        };
+
+        const resetTimer = () => {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            timerSeconds = 0;
+            timerDisplay.textContent = '00:00';
+            timerSecondsInput.value = '';
+        };
+
+        startTimerBtn.addEventListener('click', startTimer);
+        resetTimerBtn.addEventListener('click', resetTimer);
+
+        // Prompt: "Generate JavaScript for the weather functionality. Use the Geolocation API to get the user's latitude and longitude, then use Open-Meteo's free API to fetch the weather data for that location. Handle loading and display errors."
+
+        const weatherLoading = document.getElementById('weather-loading');
+        const weatherDetails = document.getElementById('weather-details');
+        const weatherLocation = document.getElementById('weather-location');
+        const weatherTemp = document.getElementById('weather-temp');
+        const weatherDescription = document.getElementById('weather-description');
+
+        const getWeather = () => {
+            weatherLoading.classList.remove('hidden');
+            weatherDetails.classList.add('hidden');
+
+            if (!navigator.geolocation) {
+                showCustomMessage("Geolocation is not supported by your browser.");
+                weatherLoading.textContent = "Geolocation not supported.";
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const { latitude, longitude } = position.coords;
+                    try {
+                        const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`;
+                        const geoApiUrl = `https://api.open-meteo.com/v1/geocode?latitude=${latitude}&longitude=${longitude}`;
+                        
+                        // Fetch weather and location in parallel
+                        const [weatherResponse, geoResponse] = await Promise.all([
+                            fetch(weatherApiUrl),
+                            fetch(geoApiUrl)
+                        ]);
+
+                        if (!weatherResponse.ok) throw new Error('Weather data fetch failed');
+                        if (!geoResponse.ok) throw new Error('Location data fetch failed');
+                        
+                        const weatherData = await weatherResponse.json();
+                        const geoData = await geoResponse.json();
+
+                        const temperature = weatherData.current_weather.temperature;
+                        const weathercode = weatherData.current_weather.weathercode;
+                        const locationName = geoData.name || 'Your Location';
+
+                        const weatherCodeMap = {
+                            0: 'Clear sky',
+                            1: 'Mainly clear',
+                            2: 'Partly cloudy',
+                            3: 'Overcast',
+                            45: 'Fog',
+                            48: 'Depositing rime fog',
+                            51: 'Light drizzle',
+                            53: 'Moderate drizzle',
+                            55: 'Dense drizzle',
+                            56: 'Light freezing drizzle',
+                            57: 'Dense freezing drizzle',
+                            61: 'Slight rain',
+                            63: 'Moderate rain',
+                            65: 'Heavy rain',
+                            66: 'Light freezing rain',
+                            67: 'Heavy freezing rain',
+                            71: 'Slight snow fall',
+                            73: 'Moderate snow fall',
+                            75: 'Heavy snow fall',
+                            77: 'Snow grains',
+                            80: 'Slight rain showers',
+                            81: 'Moderate rain showers',
+                            82: 'Violent rain showers',
+                            85: 'Slight snow showers',
+                            86: 'Heavy snow showers',
+                            95: 'Thunderstorm',
+                            96: 'Thunderstorm with slight hail',
+                            99: 'Thunderstorm with heavy hail'
+                        };
+
+                        weatherLocation.textContent = `📍 ${locationName}`;
+                        weatherTemp.textContent = `${temperature}°C`;
+                        weatherDescription.textContent = weatherCodeMap[weathercode] || "Unknown";
+
+                        weatherLoading.classList.add('hidden');
+                        weatherDetails.classList.remove('hidden');
+
+                    } catch (error) {
+                        console.error('Error fetching weather:', error);
+                        weatherLoading.textContent = 'Could not fetch weather data. Please try again later.';
+                    }
+                },
+                (error) => {
+                    console.error('Geolocation Error:', error);
+                    weatherLoading.textContent = 'Unable to retrieve your location.';
+                    showCustomMessage(`Geolocation Error: ${error.message}. Please enable location services in your browser settings.`);
+                }
+            );
+        };
+
+        // Initial check and display of the first mode
+        showMode(alarmMode);
+    </script>
+</body>
+</html>
